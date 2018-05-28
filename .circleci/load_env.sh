@@ -8,4 +8,3 @@ echo 'export VERSION=$(curl -s https://api.github.com/repos/${GITHUB_REPO}/relea
 echo 'export IMAGE_ID="${REGISTRY}/${IMAGE}:${VERSION}-${TAG}"' >> $BASH_ENV
 echo 'export DIR=`pwd`' >> $BASH_ENV
 source $BASH_ENV
-

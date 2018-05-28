@@ -24,4 +24,4 @@ FROM gcr.io/distroless/base
 
 COPY --from=builder /go/bin/mc /mc
 
-CMD ["/mc"]
+ENTRYPOINT ["/mc"]
