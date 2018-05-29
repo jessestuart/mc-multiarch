@@ -34,6 +34,6 @@ LABEL maintainer="Jesse Stuart <hi@jessestuart.com>" \
 
 COPY --from=builder /go/bin/mc /mc
 
-USER nobody
-WORKDIR /.mc
+USER nobody:nobody
+VOLUME /home/.mc
 ENTRYPOINT ["/mc"]
