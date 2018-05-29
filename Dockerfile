@@ -20,13 +20,12 @@ RUN \
 
 FROM gcr.io/distroless/base
 
-LABEL maintainer="Jesse Stuart <hi@jessestuart.com>"
-
 # Build-time metadata as defined at http://label-schema.org
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
-LABEL org.label-schema.build-date=$BUILD_DATE \
+LABEL maintainer="Jesse Stuart <hi@jessestuart.com>" \
+      org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.url="https://hub.docker.com/r/jessestuart/mc/" \
       org.label-schema.vcs-url="https://github.com/jessestuart/mc-multiarch" \
       org.label-schema.vcs-ref=$VCS_REF \
@@ -35,4 +34,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 COPY --from=builder /go/bin/mc /mc
 
+USER nobody
+WORKDIR /.mc
 ENTRYPOINT ["/mc"]
