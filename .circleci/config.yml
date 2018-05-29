@@ -131,3 +131,8 @@ jobs:
           command: |
             export VERSION=$(cat ~/VERSION)
             manifest-tool inspect "$REGISTRY/$IMAGE:$VERSION"
+
+      - run:
+          name: Update microbadger metadata.
+          command: |
+            curl -X POST https://hooks.microbadger.com/images/jessestuart/mc/vOV2w474FXCREXZdkvjIW6FSTpM=
