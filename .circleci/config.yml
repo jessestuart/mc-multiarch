@@ -4,12 +4,12 @@ build_jobs: &build_jobs
   jobs:
     - build-amd64
     - build-arm64
-    - build-armhf
+    # - build-armhf
     - push-manifest:
         requires:
           - build-amd64
           - build-arm64
-          - build-armhf
+          # - build-armhf
 
 workflows:
   version: 2
@@ -43,18 +43,6 @@ shared: &shared
         command: |
           .circleci/load_env.sh
 
-    # - run:
-    #     name: Update Go version.
-    #     command: |
-    #       source $BASH_ENV
-    #       .circleci/install_go.sh
-
-    # - run:
-    #     name: Build binary.
-    #     command: |
-    #       source $BASH_ENV
-    #       .circleci/build-binary.sh
-
     - run:
         name: Build and push Docker image.
         command: |
@@ -73,7 +61,7 @@ jobs:
     <<: *shared
     environment:
       QEMU_ARCH: aarch64
-      QEMU_VERSION: v2.11.0
+      QEMU_VERSION: v3.0.0
       REGISTRY: jessestuart
       TAG: arm64
       TARGET: arm64v8
@@ -81,10 +69,11 @@ jobs:
     <<: *shared
     environment:
       QEMU_ARCH: arm
-      QEMU_VERSION: v2.11.0
+      QEMU_VERSION: v3.0.0
       REGISTRY: jessestuart
       TAG: arm
       TARGET: arm32v6
+
   push-manifest:
     docker:
       - image: docker:18
@@ -116,12 +105,12 @@ jobs:
             export VERSION=$(cat ~/VERSION)
             echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin;
             manifest-tool push from-args \
-              --platforms linux/amd64,linux/arm,linux/arm64 \
+              --platforms linux/amd64,linux/arm64 \
               --template "$REGISTRY/$IMAGE:$VERSION-ARCH" \
               --target "$REGISTRY/$IMAGE:$VERSION"
             if [ "${CIRCLE_BRANCH}" == 'master' ]; then
               manifest-tool push from-args \
-                --platforms linux/amd64,linux/arm,linux/arm64 \
+                --platforms linux/amd64,linux/arm64 \
                 --template "$REGISTRY/$IMAGE:$VERSION-ARCH" \
                 --target "$REGISTRY/$IMAGE:latest"
             fi
