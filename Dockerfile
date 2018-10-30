@@ -1,5 +1,5 @@
 ARG target
-FROM $target/golang:1.10-alpine as builder
+FROM $target/golang:1.11-alpine as builder
 
 COPY qemu-* /usr/bin/
 
@@ -33,7 +33,7 @@ LABEL \
   org.label-schema.version=$VERSION \
   org.label-schema.schema-version="1.0"
 
-COPY --from=builder /go/bin/mc /mc
+COPY --from=builder /go/bin/mc /usr/bin/mc
 
 VOLUME /home/.mc
-ENTRYPOINT ["/mc"]
+ENTRYPOINT ["/usr/bin/mc"]
