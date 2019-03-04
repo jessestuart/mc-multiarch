@@ -1,5 +1,5 @@
 ARG target
-FROM $target/golang:1.11-alpine as builder
+FROM $target/golang:1.12-alpine as builder
 
 COPY qemu-* /usr/bin/
 
