@@ -4,12 +4,12 @@ build_jobs: &build_jobs
   jobs:
     - build-amd64
     - build-arm64
-    # - build-armhf
+    - build-armhf
     - push-manifest:
         requires:
           - build-amd64
           - build-arm64
-          # - build-armhf
+          - build-armhf
 
 workflows:
   version: 2
