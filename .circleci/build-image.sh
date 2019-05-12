@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 export IMAGE_ID="${REGISTRY}/${IMAGE}:${VERSION}-${TAG}"
 # ============
@@ -12,14 +13,13 @@ fi
 # </qemu-support>
 # ============
 
-# Replace the repo's Dockerfile with our own.
-# cp -f $DIR/Dockerfile .
 echo "Building: ${IMAGE_ID}"
 docker build -t ${IMAGE_ID} \
-  --build-arg target=$TARGET \
   --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+  --build-arg GOARCH="$GOARCH" \
+  --build-arg target="$TARGET" \
   --build-arg VCS_REF=$(git rev-parse --short HEAD) \
-  --build-arg VERSION=$VERSION \
+  --build-arg VERSION="$VERSION" \
   .
 
 # Login to Docker Hub.

@@ -1,26 +1,25 @@
 ARG target
-FROM $target/golang:1.12-alpine as builder
+FROM golang:1.12-alpine as builder
 
-COPY qemu-* /usr/bin/
-
+ARG goarch
+ENV GOARCH $goarch
 ENV GOPATH /go
-ENV PATH $PATH:$GOPATH/bin
 ENV CGO_ENABLED 0
+ENV GO111MODULE on
 
 WORKDIR /go/src/github.com/minio/
 
 RUN \
-  apk add --no-cache ca-certificates && \
-  apk add --no-cache --virtual .build-deps git && \
-  echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
-  go get -v -d github.com/minio/mc && \
-  cd /go/src/github.com/minio/mc && \
-  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main . && \
-  go install -v -ldflags "$(go run buildscripts/gen-ldflags.go)"
+  apk add --no-cache git && \
+  git clone https://github.com/minio/mc && cd mc && \
+  go build -v -ldflags "$(go run buildscripts/gen-ldflags.go)" -o /mc
 
-FROM $target/busybox
+FROM $target/alpine
 
-# Build-time metadata as defined at http://label-schema.org
+COPY qemu-* /usr/bin/
+
+COPY --from=builder /mc /usr/bin/mc
+
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
@@ -33,7 +32,8 @@ LABEL \
   org.label-schema.version=$VERSION \
   org.label-schema.schema-version="1.0"
 
-COPY --from=builder /go/bin/mc /usr/bin/mc
+RUN  \
+  apk add --no-cache ca-certificates && \
+  echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-VOLUME /home/.mc
-ENTRYPOINT ["/usr/bin/mc"]
+ENTRYPOINT ["mc"]

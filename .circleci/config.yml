@@ -1,4 +1,4 @@
-version: 2.0
+version: 2.1
 
 build_jobs: &build_jobs
   jobs:
@@ -60,16 +60,16 @@ jobs:
   build-arm64:
     <<: *shared
     environment:
+      GOARCH: arm64
       QEMU_ARCH: aarch64
-      QEMU_VERSION: v3.0.0
       REGISTRY: jessestuart
       TAG: arm64
       TARGET: arm64v8
   build-armhf:
     <<: *shared
     environment:
+      GOARCH: arm
       QEMU_ARCH: arm
-      QEMU_VERSION: v3.0.0
       REGISTRY: jessestuart
       TAG: arm
       TARGET: arm32v6
