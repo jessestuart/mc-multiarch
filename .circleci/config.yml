@@ -75,12 +75,13 @@ jobs:
 
   push-manifest:
     docker:
-      - image: docker:18
+      - image: docker:stable-git
     environment:
       GITHUB_REPO: minio/mc
       IMAGE: mc
       REGISTRY: jessestuart
     steps:
+      - checkout
       - setup_remote_docker
 
       - run:
@@ -90,35 +91,12 @@ jobs:
             curl -sL https://api.github.com/repos/${GITHUB_REPO}/releases/latest | jq -r ".tag_name" > ~/VERSION
 
       - run:
-          name: Install manifest-tool.
+          name: Install manifest-tool, push + verify manifest.
           command: |
-            echo "Downloading manifest-tool."
-            wget https://github.com/estesp/manifest-tool/releases/download/v0.7.0/manifest-tool-linux-amd64
-            mv manifest-tool-linux-amd64 /usr/bin/manifest-tool
-            chmod +x /usr/bin/manifest-tool
-            manifest-tool --version
-
-      - run:
-          name: Push Docker manifest.
-          command: |
-            export VERSION=$(cat ~/VERSION)
-            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin;
-            manifest-tool push from-args \
-              --platforms linux/amd64,linux/arm64 \
-              --template "$REGISTRY/$IMAGE:$VERSION-ARCH" \
-              --target "$REGISTRY/$IMAGE:$VERSION"
-            if [ "${CIRCLE_BRANCH}" == 'master' ]; then
-              manifest-tool push from-args \
-                --platforms linux/amd64,linux/arm64 \
-                --template "$REGISTRY/$IMAGE:$VERSION-ARCH" \
-                --target "$REGISTRY/$IMAGE:latest"
-            fi
-
-      - run:
-          name: Verify manifest was persisted remotely.
-          command: |
-            export VERSION=$(cat ~/VERSION)
-            manifest-tool inspect "$REGISTRY/$IMAGE:$VERSION"
+            apk update && apk add --upgrade curl jq
+            sh .circleci/load_env.sh
+            source $BASH_ENV
+            sh .circleci/push_manifest.sh
 
       - run:
           name: Update microbadger metadata.
