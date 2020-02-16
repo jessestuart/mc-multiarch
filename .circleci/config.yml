@@ -85,20 +85,14 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: Determine repo version.
-          command: |
-            apk add --no-cache curl jq
-            curl -sL https://api.github.com/repos/${GITHUB_REPO}/releases/latest | jq -r ".tag_name" > ~/VERSION
-
-      - run:
           name: Install manifest-tool, push + verify manifest.
           command: |
-            apk update && apk add --upgrade curl jq
+            apk add --no-cache curl jq
             sh .circleci/load_env.sh
-            source $BASH_ENV
             sh .circleci/push_manifest.sh
 
       - run:
           name: Update microbadger metadata.
           command: |
+            source $BASH_ENV
             curl -X POST https://hooks.microbadger.com/images/jessestuart/mc/vOV2w474FXCREXZdkvjIW6FSTpM=

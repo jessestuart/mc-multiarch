@@ -6,7 +6,6 @@ mv manifest-tool-linux-amd64 /usr/bin/manifest-tool
 chmod +x /usr/bin/manifest-tool
 manifest-tool --version
 
-export VERSION=$(cat ~/VERSION)
 echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
 manifest-tool push from-args \
   --platforms linux/amd64,linux/arm64 \

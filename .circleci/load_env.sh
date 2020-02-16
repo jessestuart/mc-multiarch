@@ -7,7 +7,7 @@ echo '
   export IMAGE=mc
   export IMAGE_ID="${REGISTRY}/${IMAGE}:${VERSION}-${TAG}"
   export REGISTRY=jessestuart
-  export VERSION=$(curl -s https://api.github.com/repos/${GITHUB_REPO}/releases/latest | jq -r ".tag_name")
+  export VERSION=$(curl -s https://api.github.com/repos/${GITHUB_REPO}/releases | jq -r "sort_by(.published_at)[-1].tag_name")
 	export QEMU_VERSION="v4.0.0"
 ' >>$BASH_ENV
 . $BASH_ENV
